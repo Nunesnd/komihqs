@@ -3,6 +3,7 @@ const { Pool } = require('pg');
 const pool = require('./db'); 
 
 const authorsRouter = require('./router/author');
+const companyRouter = require('./router/company');
 
 const app = express();
 const port = 3000;
@@ -13,8 +14,8 @@ app.use(express.json());
 // Corrigido aqui
 const usersRouter = require('./router/user');
 app.use('/users', usersRouter);
-
 app.use('/authors', authorsRouter);
+app.use('/companies', companyRouter);
 
 app.get('/', (req, res) => {
   res.send('Servidor funcionando!');
