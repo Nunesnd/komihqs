@@ -799,3 +799,4 @@ src/main/resources/static/*
 
 src/main/resources/static/startbootstrap-sb-admin-2-gh-pages.zip
 
+/backend/uploads

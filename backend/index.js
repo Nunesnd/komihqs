@@ -4,6 +4,7 @@ const pool = require('./db');
 
 const authorsRouter = require('./router/author');
 const companyRouter = require('./router/company');
+const comicRouter = require('./router/comic');
 
 const app = express();
 const port = 3000;
@@ -16,6 +17,8 @@ const usersRouter = require('./router/user');
 app.use('/users', usersRouter);
 app.use('/authors', authorsRouter);
 app.use('/companies', companyRouter);
+app.use('/comic', comicRouter)
+app.use('/', comicRouter);
 
 app.get('/', (req, res) => {
   res.send('Servidor funcionando!');
