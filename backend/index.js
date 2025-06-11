@@ -5,6 +5,7 @@ const pool = require('./db');
 const authorsRouter = require('./router/author');
 const companyRouter = require('./router/company');
 const comicRouter = require('./router/comic');
+const comicPagesRouter = require('./router/comicPages');
 
 const app = express();
 const port = 3000;
@@ -17,8 +18,9 @@ const usersRouter = require('./router/user');
 app.use('/users', usersRouter);
 app.use('/authors', authorsRouter);
 app.use('/companies', companyRouter);
-app.use('/comic', comicRouter)
+app.use('/comic', comicPagesRouter);
 app.use('/', comicRouter);
+app.use('/uploads', express.static('uploads'));
 
 app.get('/', (req, res) => {
   res.send('Servidor funcionando!');

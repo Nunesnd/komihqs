@@ -74,8 +74,6 @@ router.put('/:id', async (req, res) => {
       return res.status(404).json({ error: 'Autor não encontrado CCC' });
     }
 
-    console.error('AAAAAAAAAAAAAAAAAA linha query: ', result);
-
     res.json(result.rows[0]);
   } catch (err) {
     console.error('Erro ao atualizar autor BBB:', err);
