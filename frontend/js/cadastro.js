@@ -1,34 +1,29 @@
-document.getElementById('formCadastro').addEventListener('submit', async (e) => {
-  e.preventDefault(); // Impede recarregamento da página
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('registerForm').addEventListener('submit', async (event) => {
+    event.preventDefault();
 
-  const nome = document.getElementById('nome').value;
-  const email = document.getElementById('email').value;
-  const senha = document.getElementById('senha').value;
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value.trim();
 
-  try {
-    const resposta = await fetch('http://localhost:3000/users', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        name: nome,
-        email: email,
-        password: senha
-      })
-    });
+    try {
+      const response = await fetch('http://localhost:3000/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ name, email, password })
+      });
 
-    const resultado = await resposta.json();
-
-    if (resposta.ok) {
-      document.getElementById('mensagem').innerText = 'Usuário cadastrado com sucesso!';
-      document.getElementById('formCadastro').reset();
-    } else {
-      document.getElementById('mensagem').innerText = resultado.error || 'Erro ao cadastrar usuário.';
+      const data = await response.json();
+      if (response.ok) {
+        document.getElementById('mensagem').innerText = 'Usuário cadastrado com sucesso!';
+      } else {
+        document.getElementById('mensagem').innerText = `Erro: ${data.error || 'Não foi possível cadastrar.'}`;
+      }
+    } catch (err) {
+      console.error('Erro ao cadastrar usuário:', err);
+      document.getElementById('mensagem').innerText = 'Erro na comunicação com o servidor.';
     }
-
-  } catch (erro) {
-    console.error('Erro ao cadastrar:', erro);
-    document.getElementById('mensagem').innerText = 'Erro ao conectar com o servidor.';
-  }
+  });
 });

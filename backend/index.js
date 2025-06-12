@@ -6,12 +6,15 @@ const authorsRouter = require('./router/author');
 const companyRouter = require('./router/company');
 const comicRouter = require('./router/comic');
 const comicPagesRouter = require('./router/comicPages');
+const cors = require('cors');
+
 
 const app = express();
 const port = 3000;
 
 // Middleware para aceitar JSON
 app.use(express.json());
+app.use(cors()); 
 
 // Corrigido aqui
 const usersRouter = require('./router/user');
