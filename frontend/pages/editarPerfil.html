@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Editar Perfil</title>
+    <link rel="stylesheet" href="../css/style.css" />
+</head>
+
+<body>
+    <h1>Editar Perfil</h1>
+
+    <form id="editForm">
+        <label for="name">Nome:</label>
+        <input type="text" id="name" name="name" required />
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required />
+
+        <label>
+            <input type="checkbox" id="autor" name="autor" />
+            Desejo publicar minhas próprias HQs
+        </label>
+
+        <button type="submit">Atualizar</button>
+    </form>
+
+    <button id="segurancaBtn" style="margin-top: 20px;">Central de segurança</button>
+    <button id="deleteBtn" style="margin-top: 20px; color: red;">Excluir Conta</button>
+
+    <div id="mensagem" style="margin-top: 10px;"></div>
+
+    <script src="../js/seguranca.js" defer></script>
+    <script src="../js/editarPerfil.js" defer></script>
+
+</body>
+
+</html>

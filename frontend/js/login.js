@@ -19,6 +19,7 @@ document.getElementById("loginForm").addEventListener("submit", async function (
 
     // Armazenar dados do usuário (exemplo simples - para produção usar JWT/token)
     localStorage.setItem("usuarioLogado", JSON.stringify(user));
+    localStorage.setItem('userId', user.id);
 
     // Redireciona para o perfil
     window.location.href = "perfil.html";

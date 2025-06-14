@@ -52,6 +52,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // Deletar usuário
+/*
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;
 
@@ -66,6 +67,20 @@ router.delete('/:id', async (req, res) => {
   } catch (err) {
     console.error('Erro ao deletar usuário:', err);
     res.status(500).json({ error: 'Erro ao deletar usuário' });
+  }
+});
+*/
+router.put('/:id/ocultar', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query(
+      'UPDATE users SET flag_oculto = true WHERE id = $1 RETURNING *',
+      [id]
+    );
+    res.json({ message: 'Usuário ocultado com sucesso', user: result.rows[0] });
+  } catch (err) {
+    console.error('Erro ao ocultar usuário:', err);
+    res.status(500).json({ error: 'Erro ao ocultar usuário' });
   }
 });
 
