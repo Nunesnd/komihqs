@@ -21,7 +21,7 @@ router.post('/', async (req, res) => {
 // Rota para listar usuários
 router.get('/', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM users');
+    const result = await pool.query('SELECT * FROM users WHERE flag_oculto = false');
     res.json(result.rows);
   } catch (err) {
     console.error('Erro ao listar usuários:', err);
@@ -56,10 +56,7 @@ router.delete('/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
-    const result = await pool.query(
-      'DELETE FROM users WHERE id = $1 RETURNING *',
-      [id]
-    );
+    await pool.query('UPDATE users SET flag_oculto = true WHERE id = $1 RETURNING *', [id]);
 
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Usuário não encontrado' });
