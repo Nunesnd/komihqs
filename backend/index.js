@@ -2,6 +2,7 @@ const express = require('express');
 const { Pool } = require('pg');
 const pool = require('./db'); 
 
+const usersRouter = require('./router/user');
 const authorsRouter = require('./router/author');
 const companyRouter = require('./router/company');
 const comicRouter = require('./router/comic');
@@ -17,7 +18,6 @@ app.use(express.json());
 app.use(cors()); 
 
 // Corrigido aqui
-const usersRouter = require('./router/user');
 app.use('/users', usersRouter);
 app.use('/authors', authorsRouter);
 app.use('/companies', companyRouter);

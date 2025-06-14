@@ -72,5 +72,22 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
+// Login de usuário
+router.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const result = await pool.query('SELECT * FROM users WHERE email = $1 AND password_hash = $2', [email, password]);
+
+    if (result.rows.length === 0) {
+      return res.status(401).json({ error: 'Credenciais inválidas' });
+    }
+
+    const user = result.rows[0];
+    res.json(user);
+  } catch (error) {
+    console.error('Erro no login:', error);
+    res.status(500).json({ error: 'Erro no login' });
+  }
+});
 
 module.exports = router;
