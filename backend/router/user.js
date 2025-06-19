@@ -102,4 +102,27 @@ router.post('/login', async (req, res) => {
   }
 });
 
+// Obter usuário por ID
+router.get('/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query('SELECT * FROM users WHERE id = $1 AND flag_oculto = false', [id]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Usuário não encontrado ou oculto' });
+    }
+
+    // Importante: Não envie password_hash de volta para o frontend!
+    const user = result.rows[0];
+    // Cria um novo objeto sem a propriedade password_hash
+    const userWithoutPassword = { ...user };
+    delete userWithoutPassword.password_hash; 
+
+    res.json(userWithoutPassword);
+  } catch (err) {
+    console.error('Erro ao buscar usuário por ID:', err);
+    res.status(500).json({ error: 'Erro interno ao buscar usuário' });
+  }
+});
+
 module.exports = router;

@@ -12,5 +12,5 @@ if (!usuario) {
 }
 
 document.getElementById("editarBtn").addEventListener("click", () => {
-  alert("Funcionalidade de edição em breve!"); // Aqui futuramente faremos a edição
+  window.location.href = "editarPerfil.html";
 });
