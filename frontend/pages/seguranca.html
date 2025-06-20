@@ -4,24 +4,27 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Segurança - Alterar Senha</title>
+  <title>Central de Segurança</title>
   <link rel="stylesheet" href="../css/style.css" />
 </head>
 
 <body>
-  <h1>Alterar Senha</h1>
+  <h1>Central de Segurança</h1>
+  <h2>Trocar Senha</h2>
 
-  <form id="senhaForm">
-    <label for="novaSenha">Nova senha:</label>
-    <input type="password" id="novaSenha" required />
+  <form id="trocarSenhaForm">
+    <label for="novaSenha">Nova Senha:</label>
+    <input type="password" id="novaSenha" name="novaSenha" required />
 
-    <label for="confirmarSenha">Confirmar senha:</label>
-    <input type="password" id="confirmarSenha" required />
+    <label for="confirmarSenha">Confirmar Senha:</label>
+    <input type="password" id="confirmarSenha" name="confirmarSenha" required />
 
     <button type="submit">Atualizar Senha</button>
   </form>
 
-  <div id="mensagem" style="margin-top: 10px;"></div>
+  <p id="mensagem" style="margin-top: 10px;"></p>
+
+  <button id="voltarPerfilBtn" style="margin-top: 20px;">Voltar ao Perfil</button>
 
   <script src="../js/seguranca.js" defer></script>
 </body>

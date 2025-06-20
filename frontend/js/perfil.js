@@ -12,10 +12,6 @@ if (!usuario) {
   `;
 }
 
-//document.getElementById("editarBtn").addEventListener("click", () => {
-//  window.location.href = "editarPerfil.html";
-//});
-
 const editarBtn = document.getElementById("editarBtn"); // Obter a referência do botão
 if (editarBtn) { // Verificar se o botão existe
   editarBtn.addEventListener("click", () => {

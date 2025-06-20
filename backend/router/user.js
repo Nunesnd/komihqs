@@ -118,19 +118,39 @@ router.put('/:id/ocultar', async (req, res) => {
 
 // Login de usuário
 router.post('/login', async (req, res) => {
-  const { email, password } = req.body;
-  try {
-    const result = await pool.query('SELECT * FROM users WHERE email = $1 AND password_hash = $2', [email, password]);
+  const { email, password } = req.body; // 'password' aqui é a senha em texto simples digitada pelo usuário
 
-    if (result.rows.length === 0) {
-      return res.status(401).json({ error: 'Credenciais inválidas' });
+  try {
+    // 1. Buscar o usuário pelo email
+    const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+    const user = result.rows[0];
+
+    // Se o usuário não for encontrado, retornar erro de credenciais inválidas
+    if (!user) {
+      return res.status(400).json({ error: 'Credenciais inválidas.' }); // Mudei para 400 por ser mais descritivo para "não encontrado"
     }
 
-    const user = result.rows[0];
-    res.json(user);
+    // 2. Comparar a senha digitada (texto simples) com o hash armazenado no banco de dados
+    const isMatch = await bcrypt.compare(password, user.password_hash); // <-- **CORREÇÃO CRÍTICA AQUI!**
+
+    // Se as senhas não coincidem (bcrypt.compare retorna false)
+    if (!isMatch) {
+      return res.status(400).json({ error: 'Credenciais inválidas.' }); // Mudei para 400 por ser mais descritivo para "senha errada"
+    }
+
+    // Se chegou até aqui, o email existe e a senha está correta
+    const userWithoutPassword = { ...user };
+    delete userWithoutPassword.password_hash; // Remover o hash da senha antes de enviar para o frontend
+
+    // Retornar os dados do usuário (sem a senha hash)
+    // Opcional: Você pode encapsular o usuário em um objeto 'user', como fizemos em outras rotas
+    // res.json({ message: 'Login bem-sucedido!', user: userWithoutPassword });
+    // Mas, se o seu frontend espera o objeto direto, mantenha assim:
+    res.json(userWithoutPassword); // Enviando o objeto do usuário sem o hash da senha
+
   } catch (error) {
     console.error('Erro no login:', error);
-    res.status(500).json({ error: 'Erro no login' });
+    res.status(500).json({ error: 'Erro interno do servidor ao tentar fazer login.' });
   }
 });
 
@@ -155,6 +175,35 @@ router.get('/:id', async (req, res) => {
     console.error('Erro ao buscar usuário por ID:', err);
     res.status(500).json({ error: 'Erro interno ao buscar usuário' });
   }
+});
+
+router.put('/:id/password', async (req, res) => {
+    const { id } = req.params;
+    const { password } = req.body; // Recebe a nova senha
+
+    if (!password) {
+        return res.status(400).json({ error: 'A nova senha é obrigatória.' });
+    }
+
+    try {
+        // Hashing da nova senha
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        const result = await pool.query(
+            'UPDATE users SET password_hash = $1 WHERE id = $2 RETURNING id, name, email, is_company', // Retorna dados básicos, mas não a senha
+            [hashedPassword, id]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Usuário não encontrado.' });
+        }
+
+        res.status(200).json({ message: 'Senha atualizada com sucesso!', user: result.rows[0] });
+    } catch (err) {
+        console.error('Erro ao atualizar senha:', err);
+        res.status(500).json({ error: 'Erro interno do servidor ao atualizar a senha.' });
+    }
 });
 
 module.exports = router;

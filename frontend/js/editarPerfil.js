@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('editForm');
   const deleteBtn = document.getElementById('deleteBtn');
   const mensagem = document.getElementById('mensagem');
+  const segurancaBtn = document.getElementById('segurancaBtn'); 
 
   if (!userId) {
     alert('Usuário não logado.');
@@ -14,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
   fetch(`http://localhost:3000/users/${userId}`)
     .then(res => res.json())
     .then(data => {
-      document.getElementById('name').value = data.name;
+      document.getElementById('name').value = data.name
       document.getElementById('email').value = data.email;
       document.getElementById('is_company').checked = data.is_company; // novo campo
     })
@@ -59,8 +60,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  segurancaBtn.addEventListener('click', () => {
+    window.location.href = 'seguranca.html';
+  });
+
   // Redireciona para confirmar exclusão
   deleteBtn.addEventListener('click', () => {
     window.location.href = 'confirmarExclusao.html';
   });
 });
+
+
