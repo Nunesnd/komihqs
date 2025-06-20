@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
+const bcrypt = require('bcryptjs');
 
 // Rota para criar usuário
 router.post('/', async (req, res) => {
@@ -32,21 +33,52 @@ router.get('/', async (req, res) => {
 // Atualizar usuário
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
-  const { name, email, password } = req.body;
+  // Agora desestruturamos 'is_company' diretamente, pois sabemos o nome da coluna no DB
+  const { name, email, password, is_company } = req.body;
+
+  let updateQuery = 'UPDATE users SET name = $1, email = $2';
+  const queryParams = [name, email];
+  let paramCount = 3; // Começa em 3 porque $1 e $2 já foram usados para name e email
+
+  // 1. Lidar com a senha (opcional e hashed)
+  if (password) {
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    updateQuery += `, password_hash = $${paramCount}`;
+    queryParams.push(hashedPassword);
+    paramCount++;
+  }
+
+  // 2. Lidar com a flag 'is_company'
+  // Agora usamos 'is_company' diretamente na query
+  if (typeof is_company !== 'undefined') { // Verifica se o campo foi enviado
+    updateQuery += `, is_company = $${paramCount}`;
+    queryParams.push(is_company); // O valor booleano do checkbox (true/false)
+    paramCount++;
+  }
+
+  updateQuery += ` WHERE id = $${paramCount} RETURNING *`;
+  queryParams.push(id); // O ID é o último parâmetro
 
   try {
     const result = await pool.query(
-      'UPDATE users SET name = $1, email = $2, password_hash = $3 WHERE id = $4 RETURNING *',
-      [name, email, password, id]
+      updateQuery,
+      queryParams
     );
 
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Usuário não encontrado' });
     }
 
-    res.json({ user: result.rows[0] });
+    // Importante: Não envie password_hash de volta para o frontend!
+    const user = result.rows[0];
+    const userWithoutPassword = { ...user };
+    delete userWithoutPassword.password_hash;
+
+    res.json({ user: userWithoutPassword });
   } catch (err) {
     console.error('Erro ao atualizar usuário:', err);
+    console.error('Detalhe do erro do DB:', err.detail);
     res.status(500).json({ error: 'Erro ao atualizar usuário' });
   }
 });
@@ -116,7 +148,7 @@ router.get('/:id', async (req, res) => {
     const user = result.rows[0];
     // Cria um novo objeto sem a propriedade password_hash
     const userWithoutPassword = { ...user };
-    delete userWithoutPassword.password_hash; 
+    delete userWithoutPassword.password_hash;
 
     res.json(userWithoutPassword);
   } catch (err) {

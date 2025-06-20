@@ -8,9 +8,17 @@ if (!usuario) {
     <p><strong>ID:</strong> ${usuario.id}</p>
     <p><strong>Nome:</strong> ${usuario.name}</p>
     <p><strong>Email:</strong> ${usuario.email}</p>
+    <p><strong>Deseja publicar HQs:</strong> ${usuario.is_company ? 'Sim' : 'Não'}</p> 
   `;
 }
 
-document.getElementById("editarBtn").addEventListener("click", () => {
-  window.location.href = "editarPerfil.html";
-});
+//document.getElementById("editarBtn").addEventListener("click", () => {
+//  window.location.href = "editarPerfil.html";
+//});
+
+const editarBtn = document.getElementById("editarBtn"); // Obter a referência do botão
+if (editarBtn) { // Verificar se o botão existe
+  editarBtn.addEventListener("click", () => {
+    window.location.href = "editarPerfil.html";
+  });
+}

@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     .then(data => {
       document.getElementById('name').value = data.name;
       document.getElementById('email').value = data.email;
-      document.getElementById('autor').checked = data.is_author; // novo campo
+      document.getElementById('is_company').checked = data.is_company; // novo campo
     })
     .catch(err => {
       console.error('Erro ao carregar perfil:', err);
@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const payload = {
       name: document.getElementById('name').value,
       email: document.getElementById('email').value,
-      is_author: document.getElementById('autor').checked
+      is_company: document.getElementById('is_company').checked 
     };
 
     try {
@@ -41,6 +41,15 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       if (!res.ok) throw new Error('Erro ao atualizar');
+
+      // --- Ponto CRÍTICO: Sobrescrever os dados no localStorage ---
+      // 1. Recebe a resposta do backend. O backend (PUT /users/:id) DEVE retornar { user: {...} }
+      const updatedResponseData = await res.json(); 
+      
+      // 2. Converte o objeto 'user' atualizado para string JSON e salva no localStorage
+      localStorage.setItem("usuarioLogado", JSON.stringify(updatedResponseData.user)); 
+      // -----------------------------------------------------------
+
 
       mensagem.textContent = 'Perfil atualizado com sucesso.';
       setTimeout(() => window.location.href = 'perfil.html', 2000);
