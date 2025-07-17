@@ -206,4 +206,28 @@ router.put('/:id/password', async (req, res) => {
     }
 });
 
+router.post('/recuperar', async (req, res) => {
+    const { name, email } = req.body;
+    console.log('Recebido:', { name, email }); 
+
+    try {
+        const result = await pool.query(
+            'SELECT id FROM users WHERE name = $1 AND email = $2 AND flag_oculto = false',
+            [name, email]
+        );
+
+        console.log('Resultado da query:', result.rows);
+        
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Usuário não encontrado' });
+        }
+
+        res.json({ id: result.rows[0].id });
+    } catch (err) {
+        console.error('Erro na recuperação:', err);
+        res.status(500).json({ error: 'Erro interno do servidor' });
+    }
+});
+
+
 module.exports = router;
