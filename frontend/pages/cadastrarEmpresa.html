@@ -1,0 +1,26 @@
+<!-- frontend/pages/cadastrarEmpresa.html -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Cadastrar Empresa</title>
+  <link rel="stylesheet" href="/frontend/css/style.css" />
+</head>
+
+<body>
+  <h1>Cadastro de Empresa</h1>
+
+  <form id="empresaForm">
+    <input type="text" id="nome" placeholder="Nome da empresa" required /><br />
+    <textarea id="descricao" placeholder="Descrição da empresa" required></textarea><br />
+    <input type="url" id="website" placeholder="Website (opcional)" /><br />
+    <button type="submit">Cadastrar Empresa</button>
+  </form>
+
+  <p><a href="/pages/editarPerfil.html">← Voltar</a></p>
+
+  <script src="/js/cadastrarEmpresa.js"></script>
+</body>
+
+</html>

@@ -5,21 +5,22 @@ const db = require('../db');
 
 // CREATE - cria uma nova empresa
 router.post('/', async (req, res) => {
-  const { user_id, name, description, website } = req.body;
   try {
-    const existing = await db.query('SELECT * FROM companies WHERE user_id = $1', [user_id]);
-    if (existing.rows.length > 0) {
-      return res.status(400).json({ error: 'Usuário já possui uma empresa cadastrada.' });
+    const { userId, name, description, website } = req.body;
+
+    if (!userId || !name || !description) {
+      return res.status(400).json({ error: 'Campos obrigatórios ausentes' });
     }
 
     const result = await db.query(
       'INSERT INTO companies (user_id, name, description, website) VALUES ($1, $2, $3, $4) RETURNING *',
-      [user_id, name, description, website]
+      [userId, name, description, website]
     );
+
     res.status(201).json(result.rows[0]);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Erro ao criar empresa' });
+  } catch (error) {
+    console.error('Erro ao cadastrar empresa:', error);
+    res.status(500).json({ error: 'Erro ao cadastrar empresa' });
   }
 });
 

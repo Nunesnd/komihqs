@@ -4,21 +4,21 @@ const pool = require('../db');
 
 // Criar novo autor (upgrade do usuário)
 router.post('/', async (req, res) => {
-  const { user_id, pen_name, bio } = req.body;
+  const { userId, pen_name, bio } = req.body;
 
   try {
-    // Verifica se o user_id já está como autor
+    // Verifica se o userId já está como autor
     const existing = await pool.query(
-      'SELECT * FROM authors WHERE user_id = $1',
-      [user_id]
+      'SELECT * FROM authors WHERE userId = $1',
+      [userId]
     );
     if (existing.rows.length > 0) {
       return res.status(400).json({ error: 'Usuário já é autor' });
     }
 
     const result = await pool.query(
-      `INSERT INTO authors (user_id, pen_name, bio) VALUES ($1, $2, $3) RETURNING *`,
-      [user_id, pen_name, bio]
+      `INSERT INTO authors (userId, pen_name, bio) VALUES ($1, $2, $3) RETURNING *`,
+      [userId, pen_name, bio]
     );
 
     res.status(201).json(result.rows[0]);
@@ -32,9 +32,9 @@ router.post('/', async (req, res) => {
 router.get('/', async (req, res) => {
   try {
     const result = await pool.query(`
-      SELECT a.id as author_id, a.pen_name, a.bio, u.id as user_id, u.name, u.email
+      SELECT a.id as author_id, a.pen_name, a.bio, u.id as userId, u.name, u.email
       FROM authors a
-      JOIN users u ON u.id = a.user_id
+      JOIN users u ON u.id = a.userId
     `);
     res.json(result.rows);
   } catch (err) {
