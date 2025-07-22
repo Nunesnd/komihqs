@@ -26,7 +26,7 @@ router.post('/', async (req, res) => {
 // READ - lista todas as empresas
 router.get('/', async (req, res) => {
   try {
-    const result = await db.query('SELECT * FROM companies');
+    const result = await db.query('SELECT * FROM companies WHERE flag_oculto = false');
     res.json(result.rows);
   } catch (err) {
     console.error(err);
@@ -38,7 +38,7 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
   try {
-    const result = await db.query('SELECT * FROM companies WHERE id = $1', [id]);
+    const result = await db.query('SELECT * FROM companies WHERE id = $1 AND flag_oculto = false', [id]);
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Empresa não encontrada' });
     }
@@ -68,18 +68,21 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// DELETE - remove empresa
+// DELETE (ocultar) - marca a empresa como oculta
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;
   try {
-    const result = await db.query('DELETE FROM companies WHERE id = $1 RETURNING *', [id]);
+    const result = await db.query(
+      'UPDATE companies SET flag_oculto = true WHERE id = $1 RETURNING *',
+      [id]
+    );
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Empresa não encontrada' });
     }
-    res.json({ message: 'Empresa removida com sucesso' });
+    res.json({ message: 'Empresa ocultada com sucesso' });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Erro ao remover empresa' });
+    res.status(500).json({ error: 'Erro ao ocultar empresa' });
   }
 });
 
