@@ -22,7 +22,11 @@ document.getElementById("loginForm").addEventListener("submit", async function (
     localStorage.setItem('userId', user.id);
 
     // Redireciona para o perfil
-    window.location.href = "perfil.html";
+    //window.location.href = "perfil.html";
+    // Exemplo pós-login bem-sucedido:
+    localStorage.setItem('user', JSON.stringify(user)); // ou token JWT se for o caso
+    window.location.href = "../index.html";
+
   } catch (error) {
     document.getElementById("mensagem").textContent = "Erro ao fazer login: " + error.message;
   }
