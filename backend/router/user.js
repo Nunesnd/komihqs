@@ -3,44 +3,39 @@ const router = express.Router();
 const pool = require('../db');
 const bcrypt = require('bcryptjs');
 
-// Rota para criar usuário
 router.post('/', async (req, res) => {
   const { name, email, password } = req.body;
 
   try {
+    // Criptografa a senha
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
     const result = await pool.query(
       'INSERT INTO users (name, email, password_hash) VALUES ($1, $2, $3) RETURNING *',
-      [name, email, password]
+      [name, email, hashedPassword]
     );
-    res.status(201).json({ user: result.rows[0] });
+
+    const user = result.rows[0];
+    delete user.password_hash; // nunca envie o hash para o frontend
+
+    res.status(201).json({ user });
   } catch (err) {
     console.error('Erro ao inserir usuário:', err);
     res.status(500).json({ error: 'Erro ao cadastrar usuário' });
   }
 });
 
-// Rota para listar usuários
-router.get('/', async (req, res) => {
-  try {
-    const result = await pool.query('SELECT * FROM users WHERE flag_oculto = false');
-    res.json(result.rows);
-  } catch (err) {
-    console.error('Erro ao listar usuários:', err);
-    res.status(500).json({ error: 'Erro ao buscar usuários' });
-  }
-});
-
 // Atualizar usuário
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
-  // Agora desestruturamos 'is_company' diretamente, pois sabemos o nome da coluna no DB
+  
   const { name, email, password, is_company } = req.body;
 
   let updateQuery = 'UPDATE users SET name = $1, email = $2';
   const queryParams = [name, email];
   let paramCount = 3; // Começa em 3 porque $1 e $2 já foram usados para name e email
 
-  // 1. Lidar com a senha (opcional e hashed)
   if (password) {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
@@ -178,55 +173,55 @@ router.get('/:id', async (req, res) => {
 });
 
 router.put('/:id/password', async (req, res) => {
-    const { id } = req.params;
-    const { password } = req.body; // Recebe a nova senha
+  const { id } = req.params;
+  const { password } = req.body; // Recebe a nova senha
 
-    if (!password) {
-        return res.status(400).json({ error: 'A nova senha é obrigatória.' });
+  if (!password) {
+    return res.status(400).json({ error: 'A nova senha é obrigatória.' });
+  }
+
+  try {
+    // Hashing da nova senha
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    const result = await pool.query(
+      'UPDATE users SET password_hash = $1 WHERE id = $2 RETURNING id, name, email, is_company', // Retorna dados básicos, mas não a senha
+      [hashedPassword, id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Usuário não encontrado.' });
     }
 
-    try {
-        // Hashing da nova senha
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
-
-        const result = await pool.query(
-            'UPDATE users SET password_hash = $1 WHERE id = $2 RETURNING id, name, email, is_company', // Retorna dados básicos, mas não a senha
-            [hashedPassword, id]
-        );
-
-        if (result.rows.length === 0) {
-            return res.status(404).json({ error: 'Usuário não encontrado.' });
-        }
-
-        res.status(200).json({ message: 'Senha atualizada com sucesso!', user: result.rows[0] });
-    } catch (err) {
-        console.error('Erro ao atualizar senha:', err);
-        res.status(500).json({ error: 'Erro interno do servidor ao atualizar a senha.' });
-    }
+    res.status(200).json({ message: 'Senha atualizada com sucesso!', user: result.rows[0] });
+  } catch (err) {
+    console.error('Erro ao atualizar senha:', err);
+    res.status(500).json({ error: 'Erro interno do servidor ao atualizar a senha.' });
+  }
 });
 
 router.post('/recuperar', async (req, res) => {
-    const { name, email } = req.body;
-    console.log('Recebido:', { name, email }); 
+  const { name, email } = req.body;
+  console.log('Recebido:', { name, email });
 
-    try {
-        const result = await pool.query(
-            'SELECT id FROM users WHERE name = $1 AND email = $2 AND flag_oculto = false',
-            [name, email]
-        );
+  try {
+    const result = await pool.query(
+      'SELECT id FROM users WHERE name = $1 AND email = $2 AND flag_oculto = false',
+      [name, email]
+    );
 
-        console.log('Resultado da query:', result.rows);
-        
-        if (result.rows.length === 0) {
-            return res.status(404).json({ error: 'Usuário não encontrado' });
-        }
+    console.log('Resultado da query:', result.rows);
 
-        res.json({ id: result.rows[0].id });
-    } catch (err) {
-        console.error('Erro na recuperação:', err);
-        res.status(500).json({ error: 'Erro interno do servidor' });
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Usuário não encontrado' });
     }
+
+    res.json({ id: result.rows[0].id });
+  } catch (err) {
+    console.error('Erro na recuperação:', err);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
 });
 
 
