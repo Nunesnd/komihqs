@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Contrato de Autoria</title>
+  <link rel="stylesheet" href="../css/style.css" />
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=" />
+</head>
+<body>
+
+  <main>
+    <h2>Contrato de Autoria</h2>
+    <p id="textoContrato">
+      Ao tornar-se autor no Komihq, você concorda em fornecer conteúdo original, respeitar os direitos autorais e seguir os termos de uso da plataforma.
+    </p>
+
+    <label>
+      <input type="checkbox" id="aceitarContrato" />
+      Li e aceito o contrato acima
+    </label>
+
+    <div id="camposAutor" style="display: none; margin-top: 20px;">
+      <label for="pseudonimo">Pseudônimo:</label>
+      <input type="text" id="pseudonimo" name="pseudonimo" /><br />
+
+      <label for="bio">Biografia:</label>
+      <textarea id="bio" name="bio"></textarea><br />
+
+      <button id="confirmarAutor">Confirmar</button>
+    </div>
+  </main>
+
+
+    <script src="../js/contratoAutor.js"></script>
+</body>
+</html>

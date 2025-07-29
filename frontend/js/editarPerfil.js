@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('editForm');
   const deleteBtn = document.getElementById('deleteBtn');
   const mensagem = document.getElementById('mensagem');
-  const segurancaBtn = document.getElementById('segurancaBtn'); 
+  const segurancaBtn = document.getElementById('segurancaBtn');
 
   if (!userId) {
     alert('Usuário não logado.');
@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const payload = {
       name: document.getElementById('name').value,
       email: document.getElementById('email').value,
-      is_company: document.getElementById('is_company').checked 
+      is_company: document.getElementById('is_company').checked
     };
 
     try {
@@ -45,10 +45,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // --- Ponto CRÍTICO: Sobrescrever os dados no localStorage ---
       // 1. Recebe a resposta do backend. O backend (PUT /users/:id) DEVE retornar { user: {...} }
-      const updatedResponseData = await res.json(); 
-      
+      const updatedResponseData = await res.json();
+
       // 2. Converte o objeto 'user' atualizado para string JSON e salva no localStorage
-      localStorage.setItem("usuarioLogado", JSON.stringify(updatedResponseData.user)); 
+      localStorage.setItem("usuarioLogado", JSON.stringify(updatedResponseData.user));
       // -----------------------------------------------------------
 
 
@@ -68,6 +68,11 @@ document.addEventListener('DOMContentLoaded', () => {
   deleteBtn.addEventListener('click', () => {
     window.location.href = 'confirmarExclusao.html';
   });
+
+  document.getElementById('btnAutor').addEventListener('click', () => {
+    window.location.href = 'contratoAutor.html';
+  });
+
 });
 
 
