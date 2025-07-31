@@ -21,6 +21,11 @@ router.post('/', async (req, res) => {
       [user_id, pseudonimo, bio]
     );
 
+    await pool.query(
+      'UPDATE users SET is_author = true WHERE id = $1',
+      [user_id]
+    );
+
     res.status(201).json(result.rows[0]);
   } catch (err) {
     console.error('Erro ao criar autor:', err);
