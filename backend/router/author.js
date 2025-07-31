@@ -4,27 +4,27 @@ const pool = require('../db');
 
 // Criar novo autor (upgrade do usuário)
 router.post('/', async (req, res) => {
-  const { userId, pen_name, bio } = req.body;
+  const { user_id, pseudonimo, bio } = req.body;
 
   try {
     // Verifica se o userId já está como autor
     const existing = await pool.query(
-      'SELECT * FROM authors WHERE userId = $1',
-      [userId]
+      'SELECT * FROM authors WHERE user_id = $1',
+      [user_id]
     );
     if (existing.rows.length > 0) {
       return res.status(400).json({ error: 'Usuário já é autor' });
     }
 
     const result = await pool.query(
-      `INSERT INTO authors (userId, pen_name, bio) VALUES ($1, $2, $3) RETURNING *`,
-      [userId, pen_name, bio]
+      `INSERT INTO authors (user_id, pseudonimo, bio) VALUES ($1, $2, $3) RETURNING *`,
+      [user_id, pseudonimo, bio]
     );
 
     res.status(201).json(result.rows[0]);
   } catch (err) {
     console.error('Erro ao criar autor:', err);
-    res.status(500).json({ error: 'Erro ao criar autor' });
+    res.status(500).json({ error: 'Erro ao criar autor NOVAMENTE' });
   }
 });
 
@@ -32,7 +32,7 @@ router.post('/', async (req, res) => {
 router.get('/', async (req, res) => {
   try {
     const result = await pool.query(`
-      SELECT a.id as author_id, a.pen_name, a.bio, u.id as userId, u.name, u.email
+      SELECT a.id as author_id, a.pseudonimo, a.bio, u.id as userId, u.name, u.email
       FROM authors a
       JOIN users u ON u.id = a.userId
     `);
@@ -62,12 +62,12 @@ router.get('/:id', async (req, res) => {
 // Atualizar autor
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
-  const { pen_name, bio } = req.body;
+  const { pseudonimo, bio } = req.body;
 
   try {
     const result = await pool.query(
-      'UPDATE authors SET pen_name = $1, bio = $2 WHERE id = $3 RETURNING *',
-      [pen_name, bio, id]
+      'UPDATE authors SET pseudonimo = $1, bio = $2 WHERE id = $3 RETURNING *',
+      [pseudonimo, bio, id]
     );
 
     if (result.rows.length === 0) {
