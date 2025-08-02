@@ -12,6 +12,9 @@ router.post('/', async (req, res) => {
       'SELECT * FROM authors WHERE user_id = $1',
       [user_id]
     );
+
+    console.log('Resultado da consulta:', existing.rows);
+    
     if (existing.rows.length > 0) {
       return res.status(400).json({ error: 'Usuário já é autor' });
     }
@@ -20,6 +23,8 @@ router.post('/', async (req, res) => {
       `INSERT INTO authors (user_id, pseudonimo, bio) VALUES ($1, $2, $3) RETURNING *`,
       [user_id, pseudonimo, bio]
     );
+
+    console.log('Resultado da inserção:', result.rows);
 
     await pool.query(
       'UPDATE users SET is_author = true WHERE id = $1',

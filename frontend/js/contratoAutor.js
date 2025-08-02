@@ -42,8 +42,18 @@ document.getElementById('confirmarAutor').addEventListener('click', async () => 
       throw new Error('Erro ao enviar dados de autor');
     }
 
-    // Redirecionar para home do autor
-    window.location.href = 'homeAuthors.html';
+    // Exemplo após o autor ser criado
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    // Atualiza o campo is_author
+    user.is_author = true;
+
+    // Salva de volta no localStorage
+    localStorage.setItem("user", JSON.stringify(user));
+
+    // Redireciona para a home principal
+    window.location.href = "/index.html";
+    
   } catch (erro) {
     console.error('Erro ao registrar autor:', erro);
     alert('Houve um erro ao salvar os dados do autor.');
